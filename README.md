@@ -1,5 +1,7 @@
 # Automated Web Application Vulnerability Assessment Framework with Scanner Dashboard and Mini WAF
 
+[![Python Security Tests](https://github.com/Kashish-335/vuln-assessment-framework/actions/workflows/python-tests.yml/badge.svg)](https://github.com/Kashish-335/vuln-assessment-framework/actions/workflows/python-tests.yml)
+
 An academic, defense-in-depth cybersecurity framework designed for isolated laboratory environments. It combines automated vulnerability assessment (Nmap + OWASP ZAP DAST), taxonomy classification mapped to OWASP Top 10 (2021) and CWE standards, executive ReportLab PDF reporting, a standalone Mini Web Application Firewall (WAF) reverse-proxy, and a Before/After mitigation analytics dashboard.
 
 ---
