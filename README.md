@@ -101,6 +101,45 @@ flowchart TD
 
 ---
 
+## Project Screenshots
+
+### 1. Vulnerability Scanner Dashboard
+The primary assessment view featuring target configuration, real-time scanning progress, KPI metric cards, severity distribution doughnut chart, OWASP Top 10 breakdown, and the interactive findings table.
+
+![Vulnerability Scanner Dashboard](docs/screenshots/dashboard.png)
+
+### 2. Assessment History
+Historical audit log providing visibility into past scans, target URLs, assessment modes (Direct vs WAF-Protected), execution timestamps, severity distribution badges, and direct report downloads.
+
+![Assessment History](docs/screenshots/scan-history.png)
+
+### 3. Before vs After WAF Comparison
+Comparative analytics displaying side-by-side vulnerability counts and risk reduction metrics for baseline direct target testing versus traffic routed through the Mini WAF.
+
+![Before vs After Comparison](docs/screenshots/comparison.png)
+
+### 4. Mitigation Diff Matrix
+Detailed vulnerability diff table illustrating individual findings, CWE classifications, and the precise defensive mechanisms employed by the WAF to neutralize threats.
+
+![Mitigation Diff Matrix](docs/screenshots/mitigation-comparison.png)
+
+### 5. Mini WAF Telemetry & Health Dashboard
+Real-time operational dashboard for the Mini WAF showing total blocked requests, categorical breakdown of intercepted attacks, and status of active defense layers.
+
+![Mini WAF Telemetry](docs/screenshots/waf-telemetry.png)
+
+### 6. WAF Intercepted Attack Logs
+Comprehensive audit log of blocked malicious requests detailing timestamps, client IPs, attack types, matched rule IDs, HTTP methods, and captured payload snippets.
+
+![WAF Attack Logs](docs/screenshots/waf-attack-logs.png)
+
+### 7. Active WAF Regex Rules Catalog
+Active signature catalog detailing the regular expressions used by the Mini WAF inspection engine to detect SQL Injection, XSS, Path Traversal, and Command Injection.
+
+![Active WAF Regex Rules](docs/screenshots/waf-regex-rules.png)
+
+---
+
 ## Tech Stack
 
 | Component | Technology |
@@ -277,3 +316,27 @@ Inspect the logged attacks in real time at `http://localhost:5000/waf-admin`.
 
 ## Ethical Disclaimer
 This project is developed solely for educational and authorized academic lab security assessments. The framework contains hardcoded restrictions enforcing testing only within loopback (`127.0.0.1`) and RFC 1918 private subnets. Scanning unauthorized third-party systems is strictly prohibited.
+
+
+## Project Screenshots
+
+### 1. Vulnerability Scanner Dashboard
+![Vulnerability Scanner Dashboard](docs/screenshots/dashboard.png)
+
+### 2. Assessment History
+![Assessment History](docs/screenshots/scan-history.png)
+
+### 3. Before and After WAF Comparison
+![WAF Comparison](docs/screenshots/comparison.png)
+
+### 4. Mitigation Comparison
+![Mitigation Comparison](docs/screenshots/mitigation-comparison.png)
+
+### 5. Mini WAF Telemetry
+![WAF Telemetry](docs/screenshots/waf-telemetry.png)
+
+### 6. Intercepted Attack Logs
+![WAF Attack Logs](docs/screenshots/waf-attack-logs.png)
+
+### 7. WAF Security Rules
+![WAF Regex Rules](docs/screenshots/waf-regex-rules.png)
