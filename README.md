@@ -14,7 +14,7 @@ flowchart TD
 
     subgraph ScannerApp ["Scanner & Dashboard (Port 5000)"]
         DashboardUI["Bootstrap 5 & Chart.js UI"]
-        Validator["Scope & Safety Validator\n(RFC 1918 / Loopback Enforcement)"]
+        Validator["Scope & Safety Validator<br/>(RFC 1918 / Loopback Enforcement)"]
         ScannerWorker["Asynchronous Scanner Orchestrator"]
         NmapEngine["Nmap Service Recon (-sV -Pn)"]
         DASTEngine["DAST Engine (OWASP ZAP API / Lab Engine)"]
@@ -23,8 +23,8 @@ flowchart TD
 
     subgraph Defense ["Mini WAF Reverse Proxy (Port 8080)"]
         RateLimiter["Sliding Window Rate Limiter (60 RPM)"]
-        RegexEngine["Regex Deep Inspection Engine (rules.json)\n(SQLi, XSS, Path Traversal, CMDi)"]
-        HeaderInjector["Security Header Injector\n(CSP, X-Frame-Options, nosniff)"]
+        RegexEngine["Regex Deep Inspection Engine (rules.json)<br/>(SQLi, XSS, Path Traversal, CMDi)"]
+        HeaderInjector["Security Header Injector<br/>(CSP, X-Frame-Options, nosniff)"]
         BlockHandler["403 Forbidden Intercept Handler"]
     end
 
@@ -33,33 +33,33 @@ flowchart TD
     end
 
     subgraph Storage ["Persistence Layer (SQLite)"]
-        DB[(assessment_framework.db)]
+        DB[("assessment_framework.db")]
     end
 
     %% Interactions
-    Browser -->|Launch Scan / View Reports| DashboardUI
+    Browser -->|"Launch Scan / View Reports"| DashboardUI
     DashboardUI --> Validator
-    Validator -->|Authorized Target Validated| ScannerWorker
+    Validator -->|"Authorized Target Validated"| ScannerWorker
     ScannerWorker --> NmapEngine
     ScannerWorker --> DASTEngine
-    ScannerWorker -->|Store Scans & Findings| DB
-    DashboardUI -->|Export Audit| PDFGen
+    ScannerWorker -->|"Store Scans & Findings"| DB
+    DashboardUI -->|"Export Audit"| PDFGen
 
     %% Scanning Targets
-    DASTEngine -->|Baseline Scan (Direct)| JuiceShop
-    DASTEngine -->|Protected Scan (Through WAF)| RateLimiter
+    DASTEngine -->|"Baseline Scan (Direct)"| JuiceShop
+    DASTEngine -->|"Protected Scan (Through WAF)"| RateLimiter
 
     %% WAF Pipeline
-    RateLimiter -->|Clean Traffic| RegexEngine
-    RateLimiter -->|Rate Limit Exceeded (429)| BlockHandler
-    RegexEngine -->|Attack Detected (403)| BlockHandler
-    BlockHandler -->|Log Audit Event| DB
-    RegexEngine -->|Forward Valid Traffic| JuiceShop
-    JuiceShop -->|Upstream Response| HeaderInjector
-    HeaderInjector -->|Response with CSP/X-Frame| DASTEngine
+    RateLimiter -->|"Clean Traffic"| RegexEngine
+    RateLimiter -->|"Rate Limit Exceeded (429)"| BlockHandler
+    RegexEngine -->|"Attack Detected (403)"| BlockHandler
+    BlockHandler -->|"Log Audit Event"| DB
+    RegexEngine -->|"Forward Valid Traffic"| JuiceShop
+    JuiceShop -->|"Upstream Response"| HeaderInjector
+    HeaderInjector -->|"Response with CSP/X-Frame"| DASTEngine
 
     %% Telemetry
-    DashboardUI -->|Query Scan & WAF Events| DB
+    DashboardUI -->|"Query Scan & WAF Events"| DB
 ```
 
 ---
