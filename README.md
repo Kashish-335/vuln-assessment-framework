@@ -318,25 +318,3 @@ Inspect the logged attacks in real time at `http://localhost:5000/waf-admin`.
 This project is developed solely for educational and authorized academic lab security assessments. The framework contains hardcoded restrictions enforcing testing only within loopback (`127.0.0.1`) and RFC 1918 private subnets. Scanning unauthorized third-party systems is strictly prohibited.
 
 
-## Project Screenshots
-
-### 1. Vulnerability Scanner Dashboard
-![Vulnerability Scanner Dashboard](docs/screenshots/dashboard.png)
-
-### 2. Assessment History
-![Assessment History](docs/screenshots/scan-history.png)
-
-### 3. Before and After WAF Comparison
-![WAF Comparison](docs/screenshots/comparison.png)
-
-### 4. Mitigation Comparison
-![Mitigation Comparison](docs/screenshots/mitigation-comparison.png)
-
-### 5. Mini WAF Telemetry
-![WAF Telemetry](docs/screenshots/waf-telemetry.png)
-
-### 6. Intercepted Attack Logs
-![WAF Attack Logs](docs/screenshots/waf-attack-logs.png)
-
-### 7. WAF Security Rules
-![WAF Regex Rules](docs/screenshots/waf-regex-rules.png)
