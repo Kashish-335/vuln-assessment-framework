@@ -1,0 +1,100 @@
+{
+  "rules": [
+    {
+      "id": "SQLI_001",
+      "category": "SQLi",
+      "name": "SQL Injection - Tautology / Boolean Bypass",
+      "severity": "High",
+      "pattern": "(?i)('\\s*or\\s*'?\\d+'?\\s*=\\s*'?\\d+|'\\s*or\\s*'[^']*'\\s*=\\s*'[^']*|admin'\\s*--|'\\s*or\\s*1\\s*=\\s*1)",
+      "description": "Detected classic SQL boolean tautology authentication bypass payload."
+    },
+    {
+      "id": "SQLI_002",
+      "category": "SQLi",
+      "name": "SQL Injection - UNION SELECT Query",
+      "severity": "High",
+      "pattern": "(?i)\\bunion\\s+(all\\s+)?select\\b",
+      "description": "Detected UNION SELECT query designed to extract database schema or records."
+    },
+    {
+      "id": "SQLI_003",
+      "category": "SQLi",
+      "name": "SQL Injection - Stacked Commands & Piggybacked Queries",
+      "severity": "High",
+      "pattern": "(?i);\\s*(drop|insert|update|delete|truncate|alter|create|exec)\\s+",
+      "description": "Detected stacked SQL commands intended to modify or destroy database records."
+    },
+    {
+      "id": "SQLI_004",
+      "category": "SQLi",
+      "name": "SQL Injection - Time-based Blind Functions",
+      "severity": "High",
+      "pattern": "(?i)\\b(sleep\\s*\\(|benchmark\\s*\\(|waitfor\\s+delay|pg_sleep\\s*\\()",
+      "description": "Detected time-based blind SQL injection probe (SLEEP/BENCHMARK/WAITFOR)."
+    },
+    {
+      "id": "XSS_001",
+      "category": "XSS",
+      "name": "Cross-Site Scripting - Script Tag Injection",
+      "severity": "High",
+      "pattern": "(?i)<\\s*script\\b[^>]*>.*?(<\\s*/\\s*script\\s*>)?",
+      "description": "Detected explicit HTML <script> tag injection payload."
+    },
+    {
+      "id": "XSS_002",
+      "category": "XSS",
+      "name": "Cross-Site Scripting - HTML Event Handler",
+      "severity": "High",
+      "pattern": "(?i)\\bon(error|load|click|mouseover|focus|blur|change|submit)\\s*=\\s*['\"]?[^'\"]*",
+      "description": "Detected inline DOM event handler injection (e.g. onerror=, onload=)."
+    },
+    {
+      "id": "XSS_003",
+      "category": "XSS",
+      "name": "Cross-Site Scripting - JavaScript/Data Pseudo-Protocol",
+      "severity": "High",
+      "pattern": "(?i)(javascript\\s*:|data\\s*:\\s*text\\/html|vbscript\\s*:)",
+      "description": "Detected executable URI pseudo-protocol (javascript: or data:text/html)."
+    },
+    {
+      "id": "XSS_004",
+      "category": "XSS",
+      "name": "Cross-Site Scripting - SVG / IFRAME Injection",
+      "severity": "High",
+      "pattern": "(?i)<\\s*(svg|iframe|embed|object|applet|body)\\b[^>]*\\bon\\w+\\s*=",
+      "description": "Detected HTML5 vector tag with active event handler."
+    },
+    {
+      "id": "TRAV_001",
+      "category": "PathTraversal",
+      "name": "Path Traversal - Dot-Dot-Slash Relative Directory",
+      "severity": "High",
+      "pattern": "(\\.\\.[\\/\\\\]|%2e%2e[%2f%5c]|%252e%252e[%252f%255c])",
+      "description": "Detected directory traversal sequence attempting to navigate outside document root."
+    },
+    {
+      "id": "TRAV_002",
+      "category": "PathTraversal",
+      "name": "Path Traversal - Sensitive System File Access",
+      "severity": "High",
+      "pattern": "(?i)(\\/etc\\/(passwd|shadow|hosts)|\\b(win\\.ini|boot\\.ini|system32))",
+      "description": "Detected direct reference to critical operating system configuration files."
+    },
+    {
+      "id": "CMDI_001",
+      "category": "CommandInjection",
+      "name": "OS Command Injection - Shell Operator with Binary",
+      "severity": "High",
+      "pattern": "(?i)(;|\\||&&|\\n|`|\\$\\()\\s*(cat|ls|id|whoami|curl|wget|nc|sh|bash|powershell|cmd)\\b",
+      "description": "Detected shell command separator chained with common system execution binaries."
+    },
+    {
+      "id": "CMDI_002",
+      "category": "CommandInjection",
+      "name": "OS Command Injection - Command Substitution",
+      "severity": "High",
+      "pattern": "(`[^`]+`|\\$\\([^)]{1,100}\\))",
+      "description": "Detected subshell command substitution syntax."
+    }
+  ]
+}

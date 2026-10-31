@@ -1,0 +1,102 @@
+{
+  "rules": {
+    "sql_injection": {
+      "match_patterns": ["sql injection", "sqli", "blind sql", "stacked queries"],
+      "cwe_id": "CWE-89",
+      "cwe_name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "owasp_category": "A03:2021-Injection",
+      "severity": "High",
+      "cvss_score": 8.8,
+      "remediation": "Use parameterized queries / prepared statements (e.g. PreparedStatement in Java, parameterized inputs in ORMs). Never concatenate user input directly into SQL strings. Implement input validation and least-privilege database user accounts."
+    },
+    "cross_site_scripting": {
+      "match_patterns": ["cross site scripting", "xss", "reflected xss", "stored xss", "dom xss"],
+      "cwe_id": "CWE-79",
+      "cwe_name": "Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+      "owasp_category": "A03:2021-Injection",
+      "severity": "High",
+      "cvss_score": 7.5,
+      "remediation": "Context-aware output encoding (HTML, JavaScript, CSS attributes), sanitize untrusted HTML using DOMPurify, enable Content-Security-Policy (CSP) headers, and set HttpOnly flags on sensitive session cookies."
+    },
+    "path_traversal": {
+      "match_patterns": ["path traversal", "directory traversal", "local file inclusion", "lfi", "remote file inclusion"],
+      "cwe_id": "CWE-22",
+      "cwe_name": "Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')",
+      "owasp_category": "A01:2021-Broken Access Control",
+      "severity": "High",
+      "cvss_score": 8.2,
+      "remediation": "Validate path input against an explicit whitelist of permissible values. Use canonical path resolution (e.g. os.path.realpath / Path.resolve()) and ensure the target directory strictly resides within the approved root folder."
+    },
+    "command_injection": {
+      "match_patterns": ["command injection", "remote code execution", "os command", "shell injection"],
+      "cwe_id": "CWE-78",
+      "cwe_name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+      "owasp_category": "A03:2021-Injection",
+      "severity": "High",
+      "cvss_score": 9.8,
+      "remediation": "Avoid invoking shell commands with user-supplied arguments. Use platform-native APIs instead. If external process execution is mandatory, pass arguments as fixed lists without shell interpolation (e.g., shell=False in subprocess)."
+    },
+    "security_headers_missing": {
+      "match_patterns": ["anti-clickjacking", "x-frame-options", "content security policy", "x-content-type-options", "strict-transport-security", "missing anti-clickjacking"],
+      "cwe_id": "CWE-693",
+      "cwe_name": "Protection Mechanism Failure (Missing Security Headers)",
+      "owasp_category": "A05:2021-Security Misconfiguration",
+      "severity": "Medium",
+      "cvss_score": 5.3,
+      "remediation": "Configure HTTP response security headers in server or reverse-proxy middleware: 'Content-Security-Policy', 'X-Frame-Options: SAMEORIGIN', 'X-Content-Type-Options: nosniff', and 'Strict-Transport-Security: max-age=31536000; includeSubDomains'."
+    },
+    "cookie_no_httponly": {
+      "match_patterns": ["cookie no httponly", "httponly flag", "cookie without httponly"],
+      "cwe_id": "CWE-1004",
+      "cwe_name": "Sensitive Cookie Without 'HttpOnly' Flag",
+      "owasp_category": "A05:2021-Security Misconfiguration",
+      "severity": "Low",
+      "cvss_score": 4.1,
+      "remediation": "Set the 'HttpOnly' attribute on all authentication and session cookies to prevent client-side JavaScript access via XSS vulnerabilities. Ensure 'Secure' and 'SameSite=Lax/Strict' flags are also enforced."
+    },
+    "cors_misconfiguration": {
+      "match_patterns": ["cors", "cross-origin resource sharing", "wildcard cors"],
+      "cwe_id": "CWE-942",
+      "cwe_name": "Permissive Cross-Origin Resource Sharing Policy",
+      "owasp_category": "A05:2021-Security Misconfiguration",
+      "severity": "Medium",
+      "cvss_score": 6.5,
+      "remediation": "Avoid using 'Access-Control-Allow-Origin: *' with credentials. Validate incoming Origin headers against an explicit, trusted whitelist of authorized domains."
+    },
+    "information_disclosure": {
+      "match_patterns": ["information disclosure", "server banner", "directory browsing", "source code disclosure", "error disclosure"],
+      "cwe_id": "CWE-200",
+      "cwe_name": "Exposure of Sensitive Information to an Unauthorized Actor",
+      "owasp_category": "A01:2021-Broken Access Control",
+      "severity": "Low",
+      "cvss_score": 3.7,
+      "remediation": "Disable verbose debug error stack traces in production environments. Suppress or randomize 'Server' and 'X-Powered-By' HTTP headers in reverse-proxy configuration."
+    },
+    "csrf": {
+      "match_patterns": ["cross-site request forgery", "csrf", "anti-csrf"],
+      "cwe_id": "CWE-352",
+      "cwe_name": "Cross-Site Request Forgery (CSRF)",
+      "owasp_category": "A01:2021-Broken Access Control",
+      "severity": "Medium",
+      "cvss_score": 6.5,
+      "remediation": "Implement anti-CSRF synchronizer tokens for all state-changing HTTP requests (POST, PUT, DELETE). Utilize 'SameSite=Lax' or 'SameSite=Strict' on session cookies."
+    },
+    "open_redirect": {
+      "match_patterns": ["open redirect", "unvalidated redirect"],
+      "cwe_id": "CWE-601",
+      "cwe_name": "URL Redirection to Untrusted Site ('Open Redirect')",
+      "owasp_category": "A01:2021-Broken Access Control",
+      "severity": "Medium",
+      "cvss_score": 5.4,
+      "remediation": "Avoid redirecting based on unvalidated user input. Maintain a static whitelist of valid destination paths or relative URLs."
+    }
+  },
+  "default_mapping": {
+    "cwe_id": "CWE-16",
+    "cwe_name": "Configuration",
+    "owasp_category": "A05:2021-Security Misconfiguration",
+    "severity": "Informational",
+    "cvss_score": 2.5,
+    "remediation": "Review the specific finding evidence, verify application security baseline configurations, and consult the OWASP Web Security Testing Guide (WSTG)."
+  }
+}

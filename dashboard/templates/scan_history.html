@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}Assessment History | VulnAssess.Lab{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-0 text-white">Assessment History</h2>
+        <small class="text-secondary">All historical vulnerability scans and audit records.</small>
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus me-1"></i> New Assessment
+    </a>
+</div>
+
+<div class="cyber-card p-4">
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>ID</th>
+                    <th>TARGET URL</th>
+                    <th>MODE</th>
+                    <th>DATE &amp; TIME</th>
+                    <th>SEVERITY SUMMARY</th>
+                    <th>STATUS</th>
+                    <th class="text-end">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if scans %}
+                    {% for s in scans %}
+                    <tr>
+                        <td><span class="badge bg-dark border border-secondary text-secondary">#{{ s.id }}</span></td>
+                        <td>
+                            <a href="{{ url_for('scan_results', scan_id=s.id) }}" class="fw-bold text-decoration-none text-light">
+                                {{ s.target_url }}
+                            </a>
+                            <div class="text-secondary small">{{ s.target_ip }}:{{ s.target_port }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50">
+                                {{ s.scan_mode.upper() }}
+                            </span>
+                        </td>
+                        <td class="small text-secondary">
+                            {{ s.started_at.strftime('%Y-%m-%d %H:%M') if s.started_at else 'N/A' }}
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <span class="badge badge-high" title="High">{{ s.high_count }}</span>
+                                <span class="badge badge-medium" title="Medium">{{ s.medium_count }}</span>
+                                <span class="badge badge-low" title="Low">{{ s.low_count }}</span>
+                                <span class="badge badge-info" title="Info">{{ s.info_count }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            {% if s.status == 'completed' %}
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">Completed</span>
+                            {% elif s.status == 'running' %}
+                                <span class="badge bg-primary bg-opacity-25 text-primary border border-primary border-opacity-50">
+                                    <span class="pulse-indicator me-1"></span> Running
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50">{{ s.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('scan_results', scan_id=s.id) }}" class="btn btn-outline-primary" title="View Results">
+                                    <i class="fa-solid fa-chart-simple"></i>
+                                </a>
+                                <a href="{{ url_for('download_pdf', scan_id=s.id) }}" class="btn btn-outline-danger" title="Download PDF">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-secondary py-5">
+                            <i class="fa-solid fa-folder-open fa-2x mb-2 d-block opacity-50"></i>
+                            No scans recorded yet. <a href="{{ url_for('index') }}" class="text-primary">Launch your first assessment</a>.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,355 @@
+{% extends 'base.html' %}
+
+{% block title %}Assessment Results: {{ scan.target_url }} | VulnAssess.Lab{% endblock %}
+
+{% block content %}
+<!-- Results Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">
+                <i class="fa-solid fa-check-circle me-1"></i> Completed
+            </span>
+            <span class="badge bg-secondary bg-opacity-25 text-light border border-secondary border-opacity-50">
+                Mode: {{ scan.scan_mode.upper() }}
+            </span>
+            <span class="text-secondary small">ID: #{{ scan.id }}</span>
+        </div>
+        <h2 class="fw-bold mb-0 text-white">{{ scan.target_url }}</h2>
+        <small class="text-secondary">
+            Target: {{ scan.target_host }} ({{ scan.target_ip }}:{{ scan.target_port }}) • 
+            Started: {{ scan.started_at.strftime('%Y-%m-%d %H:%M:%S UTC') if scan.started_at else 'N/A' }}
+        </small>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{{ url_for('download_pdf', scan_id=scan.id) }}" class="btn btn-danger fw-semibold d-flex align-items-center gap-2">
+            <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="fa-solid fa-plus me-1"></i> New Scan
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards Row -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl">
+        <div class="kpi-card border-secondary border-opacity-25">
+            <div>
+                <div class="kpi-number text-light">{{ scan.total_findings }}</div>
+                <div class="kpi-label">Total Findings</div>
+            </div>
+            <i class="fa-solid fa-clipboard-list fa-2x text-secondary opacity-50"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl">
+        <div class="kpi-card border-danger border-opacity-30">
+            <div>
+                <div class="kpi-number text-danger">{{ scan.high_count }}</div>
+                <div class="kpi-label">High Severity</div>
+            </div>
+            <i class="fa-solid fa-radiation fa-2x text-danger opacity-50"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl">
+        <div class="kpi-card border-warning border-opacity-30">
+            <div>
+                <div class="kpi-number text-warning">{{ scan.medium_count }}</div>
+                <div class="kpi-label">Medium Severity</div>
+            </div>
+            <i class="fa-solid fa-triangle-exclamation fa-2x text-warning opacity-50"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl">
+        <div class="kpi-card border-info border-opacity-30">
+            <div>
+                <div class="kpi-number text-info">{{ scan.low_count }}</div>
+                <div class="kpi-label">Low Severity</div>
+            </div>
+            <i class="fa-solid fa-shield-virus fa-2x text-info opacity-50"></i>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl">
+        <div class="kpi-card border-primary border-opacity-30">
+            <div>
+                <div class="kpi-number text-primary">{{ scan.info_count }}</div>
+                <div class="kpi-label">Informational</div>
+            </div>
+            <i class="fa-solid fa-circle-info fa-2x text-primary opacity-50"></i>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Severity Doughnut Chart -->
+    <div class="col-lg-5">
+        <div class="cyber-card p-4 h-100">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-chart-pie text-primary"></i> Severity Distribution
+            </h5>
+            <div style="position: relative; height: 260px;">
+                <canvas id="severityChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- OWASP Top 10 Category Bar Chart -->
+    <div class="col-lg-7">
+        <div class="cyber-card p-4 h-100">
+            <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+                <i class="fa-solid fa-chart-bar text-info"></i> OWASP Top 10 (2021) Breakdown
+            </h5>
+            <div style="position: relative; height: 260px;">
+                <canvas id="owaspChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Nmap Reconnaissance Card -->
+<div class="cyber-card p-4 mb-4">
+    <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+        <i class="fa-solid fa-network-wired text-warning"></i> Nmap Network &amp; Service Reconnaissance
+    </h5>
+    <div class="table-responsive">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead>
+                <tr class="text-secondary small">
+                    <th>PORT / PROTO</th>
+                    <th>STATE</th>
+                    <th>SERVICE</th>
+                    <th>PRODUCT</th>
+                    <th>VERSION / DETAILS</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% set nmap = scan.nmap_results | from_json if scan.nmap_results else {} %}
+                {% if nmap.ports %}
+                    {% for p in nmap.ports %}
+                    <tr>
+                        <td><span class="badge bg-secondary font-monospace">{{ p.port }}/{{ p.protocol }}</span></td>
+                        <td><span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">{{ p.state }}</span></td>
+                        <td class="text-light fw-semibold">{{ p.service }}</td>
+                        <td class="text-secondary">{{ p.product or 'N/A' }}</td>
+                        <td class="text-secondary small">{{ p.version or p.extra_info or 'Detected via SYN handshake' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-secondary text-center py-3">
+                            Port {{ scan.target_port }}/TCP active. Service banner identified.
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Findings Section -->
+<div class="cyber-card p-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+        <h5 class="fw-bold mb-0 d-flex align-items-center gap-2">
+            <i class="fa-solid fa-bug text-danger"></i> Vulnerability Findings ({{ findings|length }})
+        </h5>
+        
+        <!-- Search & Filter Controls -->
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control form-control-sm bg-dark text-light border-secondary" 
+                   id="findingsSearch" placeholder="Search title, category, CWE...">
+            <select class="form-select form-select-sm bg-dark text-light border-secondary" id="severityFilter" style="width: 140px;">
+                <option value="all">All Severities</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+                <option value="informational">Info</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Findings Table -->
+    <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" id="findingsTable">
+            <thead>
+                <tr class="text-secondary small">
+                    <th style="width: 100px;">SEVERITY</th>
+                    <th>VULNERABILITY</th>
+                    <th>OWASP TOP 10</th>
+                    <th>CWE</th>
+                    <th>TARGET URI</th>
+                    <th class="text-end">ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in findings %}
+                <tr class="finding-row" 
+                    data-title="{{ f.title }}" 
+                    data-category="{{ f.owasp_category }}" 
+                    data-cwe="{{ f.cwe_id }}" 
+                    data-severity="{{ f.severity }}">
+                    <td>
+                        <span class="badge badge-{{ f.severity.lower() }}">{{ f.severity }}</span>
+                    </td>
+                    <td>
+                        <span class="fw-bold text-light">{{ f.title }}</span>
+                        {% if f.cvss_score %}
+                        <small class="text-secondary ms-1">(CVSS {{ f.cvss_score }})</small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge bg-dark border border-secondary text-secondary small">
+                            {{ f.owasp_category.split('-')[0] }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge bg-dark border border-secondary text-info font-monospace small">
+                            {{ f.cwe_id }}
+                        </span>
+                    </td>
+                    <td>
+                        <code class="small text-secondary">{{ f.url }}</code>
+                    </td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalFinding{{ f.id }}">
+                            <i class="fa-solid fa-eye me-1"></i> Inspect
+                        </button>
+                    </td>
+                </tr>
+
+                <!-- Finding Detail Modal -->
+                <div class="modal fade" id="modalFinding{{ f.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content bg-dark border-secondary text-light">
+                            <div class="modal-header border-secondary border-opacity-50">
+                                <div>
+                                    <span class="badge badge-{{ f.severity.lower() }} mb-1">{{ f.severity }}</span>
+                                    <h5 class="modal-title fw-bold text-white">{{ f.title }}</h5>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                
+                                <div class="row g-2 mb-3 small">
+                                    <div class="col-sm-6">
+                                        <span class="text-secondary">OWASP Category:</span>
+                                        <div class="fw-semibold text-light">{{ f.owasp_category }}</div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <span class="text-secondary">CWE ID:</span>
+                                        <div class="fw-semibold text-info">{{ f.cwe_id }}</div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <span class="text-secondary">Vulnerable URL:</span>
+                                        <div><code class="text-warning small text-break">{{ f.url }}</code></div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="fw-bold small text-secondary text-uppercase">Vulnerability Description:</label>
+                                    <p class="small text-light mb-0">{{ f.description }}</p>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="fw-bold small text-secondary text-uppercase">Attack Evidence &amp; Payload:</label>
+                                    <div class="p-2 rounded bg-black border border-secondary border-opacity-50 font-monospace small text-danger text-break">
+                                        <div><strong>Parameter:</strong> {{ f.parameter }}</div>
+                                        <div><strong>Payload:</strong> {{ f.attack_payload }}</div>
+                                        <div class="mt-1"><strong>Evidence:</strong> {{ f.evidence }}</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="fw-bold small text-secondary text-uppercase">Remediation Guidance:</label>
+                                    <div class="p-2 rounded bg-primary bg-opacity-10 border border-primary border-opacity-25 small text-light">
+                                        <i class="fa-solid fa-wrench text-primary me-1"></i> {{ f.remediation }}
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer border-secondary border-opacity-50">
+                                <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // 1. Severity Distribution Chart
+    const ctxSev = document.getElementById('severityChart');
+    if (ctxSev) {
+        new Chart(ctxSev, {
+            type: 'doughnut',
+            data: {
+                labels: ['High', 'Medium', 'Low', 'Informational'],
+                datasets: [{
+                    data: [{{ scan.high_count }}, {{ scan.medium_count }}, {{ scan.low_count }}, {{ scan.info_count }}],
+                    backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#0d6efd'],
+                    borderWidth: 2,
+                    borderColor: '#111827'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8', font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. OWASP Top 10 Breakdown Chart
+    const owaspCounts = {};
+    {% for f in findings %}
+        var cat = "{{ f.owasp_category.split('-')[0] }}";
+        owaspCounts[cat] = (owaspCounts[cat] || 0) + 1;
+    {% endfor %}
+
+    const ctxOwasp = document.getElementById('owaspChart');
+    if (ctxOwasp) {
+        new Chart(ctxOwasp, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(owaspCounts),
+                datasets: [{
+                    label: 'Vulnerabilities',
+                    data: Object.values(owaspCounts),
+                    backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                    borderColor: '#3b82f6',
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        ticks: { color: '#94a3b8', stepSize: 1 },
+                        grid: { color: 'rgba(75, 85, 99, 0.2)' }
+                    },
+                    y: {
+                        ticks: { color: '#f1f5f9' },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}
